@@ -201,4 +201,12 @@ STOPSIGNAL SIGINT
 # that even 90 seconds may not be long enough in many instances.
 
 EXPOSE 5432
+
+# Security: Create non-root user to run the container
+# This mitigates the risk of running with root privileges by:
+# 1. Creating a non-root user 'appuser' with UID 1000
+# 2. Changing ownership of application directories to UID 1000
+# 3. Switching to UID 1000 before CMD execution
+RUN adduser -D -u 1000 appuser && chown -R 1000:1000 /docker-entrypoint-initdb.d /var/lib/postgresql /var/run/postgresql
+USER 1000
 CMD ["postgres"]
